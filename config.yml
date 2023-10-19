@@ -1,0 +1,2 @@
+mysql:
+  url: sqlite:///./test.db
