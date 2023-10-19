@@ -1,2 +1,6 @@
 mysql:
   url: sqlite:///./test.db
+
+email_creds:
+  mail: abhinavpuri2001@gmail.com
+  app_password: voayjtlanykfynwo
