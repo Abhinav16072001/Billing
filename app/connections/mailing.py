@@ -182,4 +182,6 @@ def unique_senders_count(username, app_password, days=7):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    return unique_senders_count
+    unique_senders_list = [{"Sender": sender, "Count": count} for sender, count in unique_senders_count.items()]
+
+    return unique_senders_list

@@ -37,5 +37,5 @@ def read_mails(days: int):
     senders = unique_senders_count(username, app_password, days)
     if senders is None:
         raise HTTPException(status_code=404, detail="senders not found")
-    file_name = convert_to_excel("Unique_senders_count_info",info)
+    file_name = convert_to_excel("Unique_senders_count_info", senders)
     return senders
