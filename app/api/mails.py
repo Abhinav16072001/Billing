@@ -3,8 +3,6 @@ import datetime
 from fastapi import APIRouter, HTTPException, Depends, WebSocket
 from sqlalchemy.orm import Session
 from app.database.session import get_db
-from app.models.customer import Customer, CustomerCreate, CustomerBase
-from app.database.actions import create_customer_record, get_customers
 from app.connections.mailing import *
 from app.connections.convert import *
 from starlette.responses import JSONResponse
