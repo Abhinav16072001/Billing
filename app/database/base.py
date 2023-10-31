@@ -35,7 +35,7 @@ class Userdb(Base):
     full_name = Column(String(50))
     email = Column(String(50))
     hashed_password = Column(String(100))
-    disabled = bool
+    disabled = False
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
 

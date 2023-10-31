@@ -35,3 +35,8 @@ def user_exists(db: Session, username: str):
     if user:
         return True
     return None
+
+
+def get_userinfo(db: Session, username: str):
+    user = db.query(Userdb).filter(Userdb.username == username).first()
+    return user
