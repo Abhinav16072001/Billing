@@ -80,7 +80,10 @@ Mention and thank the people or projects that have contributed to or inspired yo
 
 ## Contact
 
-Provide your contact information or ways to reach out to you for questions, feedback, or support.
+If you have any questions, feedback, or need support, feel free to reach out to:
+
+- **Abhinav Puri**
+- Email: [abhinavpuuri2001@gmail.com](mailto:abhinavpuuri2001@gmail.com)
 
 ---
 Please replace the placeholders (such as "Project Name," "your-username," "your-repo," "License Name," and other specific details) with the appropriate information related to your project.
