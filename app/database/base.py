@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 
-with open('config.yml', 'r') as file:
+with open('app/utility/config.yml', 'r') as file:
     yaml_data = yaml.load(file, Loader=yaml.FullLoader)
 
 DATABASE_URL = yaml_data['mysql']['url']
