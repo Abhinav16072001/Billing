@@ -9,7 +9,7 @@ from starlette.responses import JSONResponse
 
 router = APIRouter(prefix='/mail', tags=['mailing'])
 
-with open('config.yml', 'r') as file:
+with open('app/utility/config.yml', 'r') as file:
     yaml_data = yaml.load(file, Loader=yaml.FullLoader)
 
 username = yaml_data['email_creds']['mail']

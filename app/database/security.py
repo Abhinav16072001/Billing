@@ -13,7 +13,7 @@ from app.database.session import get_db
 from app.models.user import User, UserInDB
 from app.models.token import TokenData
 
-with open('config.yml', 'r') as file:
+with open('app/utility/config.yml', 'r') as file:
     yaml_data = yaml.load(file, Loader=yaml.FullLoader)
 
 SECRET_KEY = yaml_data['keys']['SECRET_KEY']
