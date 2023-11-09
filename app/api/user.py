@@ -21,21 +21,19 @@ router = APIRouter(prefix='/user', tags=['user'])
 
 @router.post("/create_user")
 def create_user_data(user_data: CreateUserRequest, db: Session = Depends(get_db)):
-    try:
-        existing_user = user_exists(db, user_data.username)
-        if existing_user:
-            raise HTTPException(
-                status_code=400, detail="User with this username already exists")
+    existing_user = user_exists(db, user_data.username)
+    if existing_user:
+        raise HTTPException(
+            status_code=400, detail="User with this username already exists")
 
-        hashed_password = get_password_hash(user_data.password)
-        user_in_db = UserInDB(**user_data.dict(),
-                              hashed_password=hashed_password)
+    hashed_password = get_password_hash(user_data.password)
+    user_in_db = UserInDB(**user_data.dict(),
+                            hashed_password=hashed_password)
 
-        db_user = create_user(db, user_in_db)
+    db_user = create_user(db, user_in_db)
 
-        return db_user
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+    return db_user
+
 
 
 @router.get("/users")

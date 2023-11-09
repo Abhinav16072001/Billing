@@ -16,7 +16,7 @@ from app.models.user import User
 router = APIRouter(prefix='/auth', tags=['auth'])
 
 
-@router.post("/token", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
@@ -36,6 +36,13 @@ async def login_for_access_token(
 @router.get("/users/me/", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)]
+):
+    return current_user
+
+
+@router.get("/admin/me/", response_model=User)
+async def read_users_me(
+    current_user: Annotated[User, Depends(get_current_active_admin)]
 ):
     return current_user
 

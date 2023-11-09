@@ -21,7 +21,7 @@ ALGORITHM = yaml_data['keys']['ALGORITHM']
 ACCESS_TOKEN_EXPIRE_MINUTES = yaml_data['keys']['ACCESS_TOKEN_EXPIRE_MINUTES']
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token",
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login",
                                      scopes={"admin": "Access to all APIs", "dev": "Limited access to APIs"},)
 
 
@@ -96,6 +96,15 @@ async def get_current_user(
 
 
 async def get_current_active_user(
+    current_user: Annotated[User, Security(
+        get_current_user, scopes=['dev'])]
+):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+
+async def get_current_active_admin(
     current_user: Annotated[User, Security(
         get_current_user, scopes=['admin', 'dev'])]
 ):
