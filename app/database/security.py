@@ -97,6 +97,15 @@ async def get_current_user(
 
 async def get_current_active_user(
     current_user: Annotated[User, Security(
+        get_current_user, scopes=['dev'])]
+):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+
+async def get_current_active_admin(
+    current_user: Annotated[User, Security(
         get_current_user, scopes=['admin', 'dev'])]
 ):
     if current_user.disabled:

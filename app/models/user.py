@@ -1,11 +1,12 @@
 from pydantic import BaseModel, ValidationError
+from typing import Optional
 
 
 class User(BaseModel):
     username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
+    name: str | None = None
+    role: str
+    disabled: Optional[bool] = False
 
 
 class UserInDB(User):
@@ -14,6 +15,6 @@ class UserInDB(User):
 
 class CreateUserRequest(BaseModel):
     username: str
-    email: str | None = None
-    full_name: str | None = None
+    name: str | None = None
     password: str
+    role: str

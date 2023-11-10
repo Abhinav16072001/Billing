@@ -31,11 +31,12 @@ class Userdb(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50))
-    full_name = Column(String(50))
-    email = Column(String(50))
+    name = Column(String(50))
     hashed_password = Column(String(100))
+    role = Column(String(10))
     disabled = False
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, onupdate=func.now(), default=func.now(), nullable=False)
 
 
 Base.metadata.create_all(bind=engine)
