@@ -9,3 +9,15 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str | None = None
     scopes: list[str] = []
+
+
+class SignupToken(BaseModel):
+    username: str
+    password: str
+    role: str
+
+
+class LoginToken(BaseModel):
+    username: str
+    password: str
+    role: str

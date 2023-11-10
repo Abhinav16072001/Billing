@@ -23,6 +23,14 @@ def user_exists(db: Session, username: str):
     return None
 
 
+def user_role_exists(db: Session, username: str, role: str):
+    user = db.query(User).filter(User.username == username, User.role == role).first()
+    print(user)
+    if user:
+        return True
+    return None
+
+
 def get_userinfo(db: Session, username: str):
     user = db.query(Userdb).filter(Userdb.username == username).first()
     return user

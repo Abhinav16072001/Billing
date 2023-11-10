@@ -33,8 +33,10 @@ class Userdb(Base):
     username = Column(String(50))
     name = Column(String(50))
     hashed_password = Column(String(100))
+    role = Column(String(10))
     disabled = False
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, onupdate=func.now(), default=func.now(), nullable=False)
 
 
 Base.metadata.create_all(bind=engine)

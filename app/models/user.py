@@ -5,6 +5,7 @@ from typing import Optional
 class User(BaseModel):
     username: str
     name: str | None = None
+    role: str
     disabled: Optional[bool] = False
 
 
@@ -16,3 +17,4 @@ class CreateUserRequest(BaseModel):
     username: str
     name: str | None = None
     password: str
+    role: str

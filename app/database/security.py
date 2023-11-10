@@ -21,7 +21,7 @@ ALGORITHM = yaml_data['keys']['ALGORITHM']
 ACCESS_TOKEN_EXPIRE_MINUTES = yaml_data['keys']['ACCESS_TOKEN_EXPIRE_MINUTES']
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login",
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token",
                                      scopes={"admin": "Access to all APIs", "dev": "Limited access to APIs"},)
 
 

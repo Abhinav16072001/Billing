@@ -20,9 +20,22 @@ from app.models.user import User, CreateUserRequest
 router = APIRouter(prefix='/admin', tags=['admin'])
 
 
-@router.get("/dashboard")
+@router.get("/")
 async def dashboard(
     current_user: Annotated[User, Depends(get_current_active_admin)], db: Session = Depends(get_db)
 ):
+    """
+    Endpoint to retrieve information for the admin dashboard.
+
+    Args:
+        current_user (User): Currently authenticated admin user.
+        db (Session, optional): SQLAlchemy database session. Defaults to Depends(get_db).
+
+    Returns:
+        dict: User information for the admin dashboard.
+
+    Raises:
+        HTTPException: If the current user is not an active admin.
+    """
     user_info = get_userinfo(db, username=current_user.username)
     return user_info
