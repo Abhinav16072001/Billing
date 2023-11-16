@@ -2,7 +2,8 @@ import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, Integer, ForeignKey, String, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 with open('app/utility/config.yml', 'r') as file:
@@ -36,7 +37,41 @@ class Userdb(Base):
     role = Column(String(10))
     disabled = False
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, onupdate=func.now(), default=func.now(), nullable=False)
+    updated_at = Column(DateTime, onupdate=func.now(),
+                        default=func.now(), nullable=False)
+
+
+class Test(Base):
+    __tablename__ = "tests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(100))
+    description = Column(String(255))
+
+    questions = relationship("Question", back_populates="test")
+
+
+class Question(Base):
+    __tablename__ = "questions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    text = Column(String(255))
+    test_id = Column(Integer, ForeignKey("tests.id"))
+
+    test = relationship("Test", back_populates="questions")
+
+    options = relationship("Option", back_populates="question")
+
+
+class Option(Base):
+    __tablename__ = "options"
+
+    id = Column(Integer, primary_key=True, index=True)
+    text = Column(String(255))
+    is_correct = Column(Boolean, default=False)
+    question_id = Column(Integer, ForeignKey("questions.id"))
+
+    question = relationship("Question", back_populates="options")
 
 
 Base.metadata.create_all(bind=engine)

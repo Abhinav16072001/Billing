@@ -15,6 +15,7 @@ from app.database.actions import *
 from app.database.session import get_db
 from app.models.token import Token, SignupToken
 from app.models.user import User, CreateUserRequest
+from app.models.test import TestSchemaWithoutCorrectness
 from app.api.auth import permissions
 
 router = APIRouter(prefix='/user', tags=['user'])
@@ -92,3 +93,44 @@ def get_user_info(db: Session = Depends(get_db)):
         return users
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/tests/{test_id}/", response_model=TestSchemaWithoutCorrectness)
+def get_test_info(test_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieve test information excluding 'is_correct' field from options.
+
+    Args:
+        test_id (int): The ID of the test to retrieve.
+
+    Returns:
+        dict: Test information excluding 'is_correct' field from options.
+    """
+    test = get_test_by_id(db, test_id)
+    if not test:
+        raise HTTPException(status_code=404, detail="Test not found")
+
+    questions = []
+    for question in test.questions:
+        options = []
+        for option in question.options:
+            option_data = {
+                "id": option.id,
+                "text": option.text
+            }
+            options.append(option_data)
+
+        question_data = {
+            "id": question.id,
+            "text": question.text,
+            "options": options
+        }
+        questions.append(question_data)
+
+    test_data = {
+        "id": test.id,
+        "title": test.title,
+        "description": test.description,
+        "questions": questions
+    }
+    return test_data
