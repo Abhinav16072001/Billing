@@ -75,7 +75,7 @@ async def read_users_me(
 
 
 @router.get("/users")
-def get_user_info(db: Session = Depends(get_db)):
+def get_user_info(current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
     """
     Endpoint to retrieve information for all users.
 
@@ -96,7 +96,7 @@ def get_user_info(db: Session = Depends(get_db)):
 
 
 @router.get("/tests/{test_id}/", response_model=TestSchemaWithoutCorrectness)
-def get_test_info(test_id: int, db: Session = Depends(get_db)):
+def get_test_info(test_id: int, current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
     """
     Retrieve test information excluding 'is_correct' field from options.
 
@@ -134,3 +134,17 @@ def get_test_info(test_id: int, db: Session = Depends(get_db)):
         "questions": questions
     }
     return test_data
+
+
+@router.get("/tests_assigned/")
+def get_tests_assigned(current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
+    user = get_userinfo(db, current_user.username)
+    print(user.id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    assigned_tests = get_assigned_tests_for_user(db,user)
+
+    return [
+            {"title": test['title'], "assigned_at": test['assigned_at']} for test in assigned_tests
+        ]

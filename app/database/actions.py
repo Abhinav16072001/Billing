@@ -86,7 +86,21 @@ def get_userinfo(db: Session, username: str):
     return user
 
 
+def get_user_by_id(db: Session, user_id: int) -> User:
+    """
+    Retrieve a user by their ID from the database.
+
+    Args:
+        db (Session): The database session.
+        user_id (int): The ID of the user to retrieve.
+
+    Returns:
+        User: The user corresponding to the given ID.
+    """
+    return db.query(Userdb).filter(Userdb.id == user_id).first()
+
 # Test
+
 
 def create_test_record(db: Session, test_data: TestCreate) -> Test:
     """
@@ -151,3 +165,34 @@ def get_test_by_id(db: Session, test_id: int) -> Test:
         Test: The test object corresponding to the ID.
     """
     return db.query(Test).filter(Test.id == test_id).first()
+
+
+# Assigned
+
+def get_assigned_tests_for_user(db: Session, user: User) -> list:
+    """
+    Retrieve tests assigned to a specific user from the database.
+
+    Args:
+        db (Session): The database session.
+        user (User): The user for whom tests are to be retrieved.
+
+    Returns:
+        list: A list of Test objects assigned to the user.
+    """
+    assigned_tests = (
+        db.query(Test, user_test_association.c.created_at)
+        .join(user_test_association)
+        .filter(user_test_association.c.user_id == user.id)
+        .all()
+    )
+
+    assigned_tests_with_timestamp = [
+        {
+            "title": test.title,
+            "assigned_at": timestamp
+        }
+        for test, timestamp in assigned_tests
+    ]
+
+    return assigned_tests_with_timestamp

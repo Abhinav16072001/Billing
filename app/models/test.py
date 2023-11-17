@@ -29,7 +29,7 @@ class Test(TestBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Test Schemas admin
 
@@ -40,7 +40,7 @@ class OptionSchema(BaseModel):
     is_correct: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         from_attributes = True
 
 
@@ -50,7 +50,7 @@ class QuestionSchema(BaseModel):
     options: List[OptionSchema]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         from_attributes = True
 
 
@@ -61,7 +61,7 @@ class TestSchema(BaseModel):
     questions: List[QuestionSchema]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         from_attributes = True
 
 # Test Schemas User
@@ -72,7 +72,8 @@ class OptionWithoutCorrectness(BaseModel):
     text: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
 
 class QuestionWithoutCorrectness(BaseModel):
     id: int
@@ -80,7 +81,8 @@ class QuestionWithoutCorrectness(BaseModel):
     options: List[OptionWithoutCorrectness]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
 
 class TestSchemaWithoutCorrectness(BaseModel):
     id: int
@@ -89,4 +91,11 @@ class TestSchemaWithoutCorrectness(BaseModel):
     questions: List[QuestionWithoutCorrectness]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+# Assign
+
+class TestUserAssignment(BaseModel):
+    user_id: List[int]
+    test_id: List[int]

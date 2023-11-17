@@ -2,7 +2,7 @@ import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Boolean, Column, Integer, ForeignKey, String, DateTime
+from sqlalchemy import Boolean, Column, Integer, ForeignKey, String, DateTime, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -17,6 +17,16 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+# Define the association table for user-test assignments
+user_test_association = Table(
+    'user_test_assignment', Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id')),
+    Column('test_id', Integer, ForeignKey('tests.id')),
+    Column('created_at', DateTime, default=func.now()),
+    Column('updated_at', DateTime, default=func.now(), onupdate=func.now())
+)
 
 
 class Customerdb(Base):
@@ -40,6 +50,9 @@ class Userdb(Base):
     updated_at = Column(DateTime, onupdate=func.now(),
                         default=func.now(), nullable=False)
 
+    tests = relationship(
+        "Test", secondary=user_test_association, back_populates="users")
+
 
 class Test(Base):
     __tablename__ = "tests"
@@ -49,6 +62,8 @@ class Test(Base):
     description = Column(String(255))
 
     questions = relationship("Question", back_populates="test")
+    users = relationship(
+        "Userdb", secondary=user_test_association, back_populates="tests")
 
 
 class Question(Base):
