@@ -24,6 +24,10 @@ user_test_association = Table(
     'user_test_assignment', Base.metadata,
     Column('user_id', Integer, ForeignKey('users.id')),
     Column('test_id', Integer, ForeignKey('tests.id')),
+    Column('start_time', String(10)),
+    Column('end_time', String(10)),
+    Column('duration', String(10)),
+    Column('is_expired', Boolean),
     Column('created_at', DateTime, default=func.now()),
     Column('updated_at', DateTime, default=func.now(), onupdate=func.now())
 )
