@@ -111,23 +111,9 @@ def get_test(test_id: int, current_user: Annotated[User, Depends(get_current_act
 
 @router.post("/assign-tests/")
 def assign_tests_to_users(test_user_assignment: TestUserAssignment, current_user: Annotated[User, Depends(get_current_active_admin)], db: Session = Depends(get_db)):
-    for user_id in test_user_assignment.user_id:
-        user = get_user_by_id(db, user_id)
-        if not user:
-            raise HTTPException(
-                status_code=404, detail=f"User with ID {user_id} not found")
+    create_user_test_assignment(db, test_user_assignment.user_id, test_user_assignment.test_id,
+                                test_user_assignment.start_time, test_user_assignment.end_time)
 
-        for test_id in test_user_assignment.test_id:
-            test = get_test_by_id(db, test_id)
-            if not test:
-                raise HTTPException(
-                    status_code=404, detail=f"Test with ID {test_id} not found")
-
-            # Check if the test is already assigned to the user
-            if test not in user.tests:
-                user.tests.append(test)
-
-    db.commit()
     return {"message": "Tests assigned to users"}
 
 
@@ -139,7 +125,7 @@ def get_tests_assigned_to_users(current_user: Annotated[User, Depends(get_curren
     for user in users:
         assigned_tests = get_assigned_tests_for_user(db, user)
         users_with_tests[user.username] = [
-            {"title": test['title'], "assigned_at": test['assigned_at']} for test in assigned_tests
+            test for test in assigned_tests
         ]
 
     return users_with_tests

@@ -1,5 +1,7 @@
 from typing import List
+from datetime import datetime
 from sqlalchemy.orm import Session
+from sqlalchemy import insert
 from .base import *
 from app.models.user import User
 from app.models.test import TestCreate, QuestionBase, OptionBase
@@ -181,7 +183,7 @@ def get_assigned_tests_for_user(db: Session, user: User) -> list:
         list: A list of Test objects assigned to the user.
     """
     assigned_tests = (
-        db.query(Test, user_test_association.c.created_at)
+        db.query(Test, user_test_association.c.created_at, user_test_association.c.start_time, user_test_association.c.end_time, user_test_association.c.duration, user_test_association.c.is_expired)
         .join(user_test_association)
         .filter(user_test_association.c.user_id == user.id)
         .all()
@@ -190,9 +192,47 @@ def get_assigned_tests_for_user(db: Session, user: User) -> list:
     assigned_tests_with_timestamp = [
         {
             "title": test.title,
-            "assigned_at": timestamp
+            "assigned_at": timestamp,
+            "start_time": start_time,
+            "end_time": end_time,
+            "duration": duration,
+            "is_expired": is_expired
         }
-        for test, timestamp in assigned_tests
+        for test, timestamp, start_time, end_time, duration, is_expired in assigned_tests
     ]
 
     return assigned_tests_with_timestamp
+
+
+def create_user_test_assignment(db, user_ids, test_ids, start_time, end_time):
+    for user_id in user_ids:
+        user = get_user_by_id(db, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
+
+        for test_id in test_ids:
+            test = get_test_by_id(db, test_id)
+            if not test:
+                raise HTTPException(status_code=404, detail=f"Test with ID {test_id} not found")
+
+            # Calculate duration_minutes using datetime objects
+            duration_minutes = (end_time - start_time).total_seconds() // 60
+
+            # Check if the test is already assigned to the user
+            if test not in user.tests:
+                # Append the test with time-related info to user.tests
+                assignment_values = {
+                    'user_id': user.id,
+                    'test_id': test.id,
+                    'start_time': start_time,
+                    'end_time': end_time,
+                    'duration': duration_minutes,
+                    'is_expired': False
+                }
+
+                # Create an INSERT statement and execute it
+                insert_stmt = insert(user_test_association).values(**assignment_values)
+                db.execute(insert_stmt)
+
+    db.commit()  # Commit the changes
+    return {"message": "UserTestAssignments created successfully"}

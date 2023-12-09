@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, ValidationError, Field
+from datetime import datetime
 
 # Create Test models
 
@@ -99,3 +100,6 @@ class TestSchemaWithoutCorrectness(BaseModel):
 class TestUserAssignment(BaseModel):
     user_id: List[int]
     test_id: List[int]
+    start_time: datetime
+    end_time: datetime
+    duration: datetime = None
