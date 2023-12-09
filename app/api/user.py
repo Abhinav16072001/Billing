@@ -139,7 +139,6 @@ def get_test_info(test_id: int, current_user: Annotated[User, Depends(get_curren
 @router.get("/tests_assigned/")
 def get_tests_assigned(current_user: Annotated[User, Depends(get_current_active_user)], db: Session = Depends(get_db)):
     user = get_userinfo(db, current_user.username)
-    print(user.id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 

@@ -18,3 +18,8 @@ class CreateUserRequest(BaseModel):
     name: str | None = None
     password: str
     role: str
+
+
+class UserAccessUpdate(BaseModel):
+    username: str
+    disabled: bool
