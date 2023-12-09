@@ -49,7 +49,7 @@ class Userdb(Base):
     name = Column(String(50))
     hashed_password = Column(String(100))
     role = Column(String(10))
-    disabled = False
+    disabled = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, onupdate=func.now(),
                         default=func.now(), nullable=False)

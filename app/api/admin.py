@@ -15,7 +15,7 @@ from app.database.actions import *
 from app.database.session import get_db
 from app.models.token import Token
 from app.models.test import TestCreate, QuestionBase, OptionBase, Test, TestSchema, OptionSchema, QuestionSchema, TestUserAssignment
-from app.models.user import User, CreateUserRequest
+from app.models.user import User, CreateUserRequest, UserAccessUpdate
 
 
 router = APIRouter(prefix='/admin', tags=['admin'])
@@ -40,6 +40,27 @@ async def dashboard(
     """
     user_info = get_userinfo(db, username=current_user.username)
     return user_info
+
+
+@router.put("/accessedit")
+async def disable_user(user_data: UserAccessUpdate, current_user: Annotated[User, Depends(get_current_active_admin)], db: Session = Depends(get_db)):
+    """
+    Endpoint to modify user access rights based on the provided data.
+    Args:
+        user_data (UserAccessUpdate): Data to update user access.
+        current_user (User): Currently authenticated admin user.
+        db (Session): SQLAlchemy database session.
+
+    Returns:
+        User: Updated user information.
+
+    Raises:
+        HTTPException: If the user to be updated is not found.
+    """
+    success = change_user_disable_status(db, user_data.username, user_data.disabled)
+    if success:
+        return {"message": f"User disabled status updated"}
+    raise HTTPException(status_code=404, detail=f"User not found")
 
 
 @router.post("/add_test/", response_model=Test)

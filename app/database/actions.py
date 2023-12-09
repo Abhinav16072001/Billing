@@ -101,6 +101,27 @@ def get_user_by_id(db: Session, user_id: int) -> User:
     """
     return db.query(Userdb).filter(Userdb.id == user_id).first()
 
+
+def change_user_disable_status(db: Session, username: str, disabled: bool) -> bool:
+    """
+    Change the 'disabled' status of a user in the database.
+
+    Args:
+        db (Session): SQLAlchemy database session.
+        username (str): Username of the user whose status is to be changed.
+        disabled (bool): New status for the 'disabled' field.
+
+    Returns:
+        bool: True if the user's status was updated successfully, False otherwise.
+    """
+    user = db.query(Userdb).filter(Userdb.username == username).first()
+    if user:
+        user.disabled = disabled
+        db.commit()
+        return True  # Indicates successful update
+    return False  # User not found
+
+
 # Test
 
 
