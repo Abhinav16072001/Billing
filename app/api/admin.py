@@ -13,10 +13,9 @@ from sqlalchemy.orm import Session
 from app.database.security import *
 from app.database.actions import *
 from app.database.session import get_db
-from app.models.token import Token
-from app.models.test import TestCreate, QuestionBase, OptionBase, Test, TestSchema, OptionSchema, QuestionSchema, TestUserAssignment
-from app.models.user import User, CreateUserRequest, UserAccessUpdate
-
+from app.models.test import TestCreate, Test, TestSchema, OptionSchema, QuestionSchema, TestUserAssignment
+from app.models.user import User, UserAccessUpdate
+from app.models.items import MenuItemCreate
 
 router = APIRouter(prefix='/admin', tags=['admin'])
 
@@ -57,7 +56,8 @@ async def disable_user(user_data: UserAccessUpdate, current_user: Annotated[User
     Raises:
         HTTPException: If the user to be updated is not found.
     """
-    success = change_user_disable_status(db, user_data.username, user_data.disabled)
+    success = change_user_disable_status(
+        db, user_data.username, user_data.disabled)
     if success:
         return {"message": f"User disabled status updated"}
     raise HTTPException(status_code=404, detail=f"User not found")
@@ -150,3 +150,12 @@ def get_tests_assigned_to_users(current_user: Annotated[User, Depends(get_curren
         ]
 
     return users_with_tests
+
+
+@router.post("/addItems/")
+def create_menu_item(menu_item: MenuItemCreate, current_user: Annotated[User, Depends(get_current_active_admin)], db: Session = Depends(get_db)):
+    user = get_userinfo(db, current_user.username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    created_item = create_menu_item_in_db(db, user.id, menu_item)
+    return {"message": "Menu item added successfully", "data": created_item}

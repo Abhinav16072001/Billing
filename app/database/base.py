@@ -2,7 +2,7 @@ import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Boolean, Column, Integer, ForeignKey, String, DateTime, Table
+from sqlalchemy import Boolean, Column, Integer, ForeignKey, String, DateTime, Table, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -91,6 +91,21 @@ class Option(Base):
     question_id = Column(Integer, ForeignKey("questions.id"))
 
     question = relationship("Question", back_populates="options")
+
+# menu
+
+
+class MenuItemDb(Base):
+    __tablename__ = "menu_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(String(255))
+    price = Column(Float, nullable=False)
+    image_url = Column(String(255))
+    category = Column(String(100), nullable=False)
+    # Establishing the user relationship
+    user_id = Column(Integer, ForeignKey('users.id'))
 
 
 Base.metadata.create_all(bind=engine)
