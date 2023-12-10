@@ -1,10 +1,12 @@
 from typing import List
+from fastapi import HTTPException
 from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import insert
 from .base import *
 from app.models.user import User
-from app.models.test import TestCreate, QuestionBase, OptionBase
+from app.models.test import TestCreate, QuestionBase
+from app.models.items import MenuItemCreate
 
 # User
 
@@ -204,7 +206,8 @@ def get_assigned_tests_for_user(db: Session, user: User) -> list:
         list: A list of Test objects assigned to the user.
     """
     assigned_tests = (
-        db.query(Test, user_test_association.c.created_at, user_test_association.c.start_time, user_test_association.c.end_time, user_test_association.c.duration, user_test_association.c.is_expired)
+        db.query(Test, user_test_association.c.created_at, user_test_association.c.start_time,
+                 user_test_association.c.end_time, user_test_association.c.duration, user_test_association.c.is_expired)
         .join(user_test_association)
         .filter(user_test_association.c.user_id == user.id)
         .all()
@@ -229,12 +232,14 @@ def create_user_test_assignment(db, user_ids, test_ids, start_time, end_time):
     for user_id in user_ids:
         user = get_user_by_id(db, user_id)
         if not user:
-            raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"User with ID {user_id} not found")
 
         for test_id in test_ids:
             test = get_test_by_id(db, test_id)
             if not test:
-                raise HTTPException(status_code=404, detail=f"Test with ID {test_id} not found")
+                raise HTTPException(
+                    status_code=404, detail=f"Test with ID {test_id} not found")
 
             # Calculate duration_minutes using datetime objects
             duration_minutes = (end_time - start_time).total_seconds() // 60
@@ -252,8 +257,37 @@ def create_user_test_assignment(db, user_ids, test_ids, start_time, end_time):
                 }
 
                 # Create an INSERT statement and execute it
-                insert_stmt = insert(user_test_association).values(**assignment_values)
+                insert_stmt = insert(user_test_association).values(
+                    **assignment_values)
                 db.execute(insert_stmt)
 
     db.commit()  # Commit the changes
     return {"message": "UserTestAssignments created successfully"}
+
+
+# Menu
+
+def create_menu_item_in_db(db: Session, user_id: int, menu_item: MenuItemCreate):
+    """
+    Create a new menu item in the database for a specific user.
+
+    Args:
+        db (Session): The database session.
+        user_id (int): The ID of the user associated with the menu item.
+        menu_item (MenuItemCreate): Details of the menu item to be created.
+
+    Returns:
+        MenuItemDb: The created menu item in the database.
+    """
+    db_menu_item = MenuItemDb(
+        name=menu_item.name,
+        description=menu_item.description,
+        price=menu_item.price,
+        image_url=menu_item.image_url,
+        category=menu_item.category,
+        user_id=user_id  # Assuming user_id is the foreign key linking MenuItem to User
+    )
+    db.add(db_menu_item)
+    db.commit()
+    db.refresh(db_menu_item)
+    return db_menu_item
